@@ -1,0 +1,1 @@
+from BetDelta.blueprints.pages.views import page
