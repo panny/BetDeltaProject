@@ -1,0 +1,227 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <link rel="stylesheet" href="{% static 'api/css/common.css' %}">
+    <script src="{% static 'api/js/vue.js' %}"></script>
+    <script src="{% static 'api/js/eleJS.js' %}"></script>
+    <script src="{% static 'api/js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+        var isIE8=false;
+    </script>
+    <!--[if lt IE 9]>
+    <script>
+        isIE8=true;
+    </script>
+    <![endif]-->
+</head>
+<body>
+<div id="app">
+    <template>
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item>
+                <el-input v-model="formInline.user"  prefix-icon="el-icon-search" placeholder="赛马"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search">搜索</el-button>
+            </el-form-item>
+            <el-form-item>
+            <el-select
+                    v-model="value2"
+                    multiple
+                    collapse-tags
+                    style="margin-left: 20px;"
+                    placeholder="请选择" @change="onSelectedDrug($event)">
+                <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.value"
+                        :value="item.id" >
+                </el-option>
+            </el-select>
+            </el-form-item>
+        </el-form>
+
+        <el-table
+                :data="tableData"
+                stripe
+                style="width: 100%">
+            <el-table-column
+                    type="selection"
+                    width="55" >
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="赛马"
+                    width="180"
+                    v-if="colData[0].istrue"
+            >
+            </el-table-column>
+            <el-table-column
+                    prop="trainer"
+                    label="练师"
+                    sortable
+                    width="180" v-if="colData[1].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="jockey"
+                    label="骑师"
+                    sortable
+                    width="180" v-if="colData[2].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="track"
+                    label="赛道" v-if="colData[3].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="route"
+                    label="赛程" v-if="colData[4].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="ranking"
+                    label="历史成绩" v-if="colData[5].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="head_distance"
+                    label="头马距离" v-if="colData[6].istrue">
+            </el-table-column>
+            <el-table-column
+                    prop="blocking"
+                    label="沿途走位" v-if="colData[7].istrue">
+            </el-table-column>
+        </el-table>
+        <el-col :span="24" class="toolbar pageBar">
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage1"
+                    :page-sizes="[20, 50, 100]"
+                    :page-size="pageSize"
+                    layout=" prev, pager, next, sizes, total"
+                    :total="total">
+            </el-pagination>
+        </el-col>
+
+    </template>
+</div>
+</body>
+<style>
+    .el-table thead{color:#409eff}
+    .has-gutter th{background: #eee}
+    .has-gutter th .el-checkbox{margin-left: 5px;}
+</style>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                formInline: {
+                    user: '',
+                    region: ''
+                },
+                options: [{
+                    id:0,
+                    value: '赛马',
+                }, {
+                    id:1,
+                    value: '练师',
+                }, {
+                    id:2,
+                    value: '骑师',
+                }, {
+                    id:3,
+                    value: '赛道',
+                }, {
+                    id:4,
+                    value: '赛程',
+                }, {
+                    id:5,
+                    value: '历史成绩',
+                }, {
+                    id:6,
+                    value: '头马距离',
+                }, {
+                    id:7,
+                    value: '沿途走位',
+                }
+                ],
+
+                value2: [],
+                tableData: [],
+                colData: [
+                    { title: '赛马', istrue: true ,value:0},
+                    { title: '练师', istrue: true  ,value:1},
+                    { title: '骑师', istrue: true ,value:2},
+                    { title: '赛道', istrue: true  ,value:3},
+                    { title: '赛程', istrue: true  ,value:4},
+                    { title: '历史成绩', istrue: true ,value:5},
+                    { title: '头马距离', istrue: true  ,value:6},
+                    { title: '沿途走位', istrue: true  ,value:7},
+                ],
+                currentPage1: 1,
+                total: 0,
+                page: 1,
+                pageSize: 20,
+            }
+        },
+        created:function(){
+            this.getData();
+        },
+        methods: {
+            onSubmit() {
+                console.log('submit!');
+            },
+            onSelectedDrug($event) {
+                this.colData.forEach(function(item,e){
+                        item.istrue = true
+                })
+                for(let i=0;i<$event.length;i++){
+                    this.colData.forEach(function(item,e){
+                        if ($event[i] == e) {
+                            item.istrue = false
+                        }
+                    })
+                }
+            },
+            getData: function () {
+                let that = this;
+                $.ajax({
+                    method: 'post',
+                    url: '/api/index/',
+                    async: false,
+                    data: {
+                        pageNum: that.currentPage1,
+                        pageSize: that.pageSize,
+                    },
+                }).then(function (response) {
+                    data = JSON.parse(response);
+                    that.tableData = data.tableData;
+                    that.currentPage1 = data.currentPage1;
+                    that.total = data.total;
+                }, function (error) {
+                    console.log(error)
+                })
+            },
+            //分页点击方法
+            handleSizeChange:function(val) {
+                this.currentPage1 = 1;
+                this.pageSize = val;
+                this.getData();
+            },
+            handleCurrentChange:function(val) {
+                this.currentPage1 = val;
+                console.log(val)
+                this.getData();
+            }
+        },
+
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <link rel="stylesheet" href="../static/css/common.css">
+    <script src="../static/js/vue.js"></script>
+    <script src="../static/js/eleJS.js"></script>
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script>
+        var isIE8=false;
+    </script>
+    <!--[if lt IE 9]>
+    <script>
+        isIE8=true;
+    </script>
+    <![endif]-->
+</head>
+<body>
+<div id="app">
+    <template>
+        选择比赛时间：
+        <el-select v-model="time"  @change="onSelectedDrug($event)">
+            <el-option
+                    v-for="(item,index) in options"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+            </el-option>
+        </el-select>
+        &nbsp;&nbsp;&nbsp;选择比赛场次：
+        <el-select v-model="scene"  @change="onSceneDrug($event)">
+            <el-option
+                    v-for="(item,index) in scenelist"
+                    :key="index"
+                    :label="item"
+                    :value="item">
+            </el-option>
+        </el-select>
+        <el-select
+                v-model="value2"
+                multiple
+                collapse-tags
+                style="margin-left: 20px;"
+                placeholder="请选择" @change="onSelected($event)">
+            <el-option
+                    v-for="item in options2"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.id" >
+            </el-option>
+        </el-select>
+        <div class="title">{{title1}}</div>
+        <el-row>
+            <el-col :span="3" v-for="(item, index) in list" :key="index" style="margin-right: 20px; margin-bottom: 20px;">
+                <el-card :body-style="{ padding: '0px' }">
+                    <div style="padding: 14px;" class="activelist">
+                        <div >
+                            <span class="horse" v-if="colData[0].istrue">{{item.horse}}</span>
+                            <em  class="horseno" v-if="colData[1].istrue">{{ item.horse_no }}</em>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="clear itemactive" v-if="colData[2].istrue">
+                            <label>练师</label>
+                            <p class="">{{ item.trainer }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[3].istrue">
+                            <label>骑师</label>
+                            <p class="">{{ item.jockey }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[4].istrue">
+                            <label>赛道</label>
+                            <p class="">{{ item.track }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[5].istrue">
+                            <label>赛程</label>
+                            <p class="">{{ item.route }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[6].istrue">
+                            <label>历史成绩</label>
+                            <p class="">{{ item.order }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[7].istrue">
+                            <label>头马距离</label>
+                            <p class="">{{ item.head_distance }}</p>
+                        </div>
+                        <div class="clear itemactive" v-if="colData[8].istrue">
+                            <label>沿途走位</label>
+                            <p class="">{{ item.blocking }}</p>
+                        </div>
+                    </div>
+                </el-card>
+            </el-col>
+        </el-row>
+
+    </template>
+</div>
+</body>
+<style>
+    .el-select{margin-bottom: 20px;}
+    .activelist{border-left: 5px solid #f56c6c;}
+    .activelist .horse{float: left; font-size: 14px; color: #f78989; margin-bottom: 15px;}
+    .activelist .horseno{float: right; font-size: 12px; color:#ffffff; background: #a0cfff; border-radius: 40px;padding:0 3px; margin-bottom: 15px;}
+    .el-col-3 { width: 12.9%!important;}
+    @media screen and (max-width: 800px) {
+        .el-col-3 { width: 22%!important;}
+    }@media screen and (max-width: 600px) {
+        .el-col-3 { width: 25%!important;}
+    }@media screen and (max-width: 480px) {
+        .el-col-3 { width: 45%!important;}
+    }@media screen and (max-width: 400px) {
+        .el-col-3 { width: 95%!important;}
+    }
+    .itemactive{ margin-bottom: 10px;}
+    .itemactive label{float: left; color: #999999}
+    .itemactive p{float: right;}
+    .title{margin-bottom: 20px;}
+</style>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                options: [],
+                scenelist:[],
+                time: '20/02/2020',
+                scene:'第 10 場 (444)',
+                title1:'第 10 場 (444)',
+                list:[],
+                options2: [{
+                    id:0,
+                    value: '赛马',
+                }, {
+                    id:1,
+                    value: '赛马id',
+                }, {
+                    id:2,
+                    value: '练师',
+                }, {
+                    id:3,
+                    value: '骑师',
+                },{
+                    id:4,
+                    value: '赛道',
+                }, {
+                    id:5,
+                    value: '赛程',
+                }, {
+                    id:6,
+                    value: '历史成绩',
+                }, {
+                    id:7,
+                    value: '头马距离',
+                }, {
+                    id:8,
+                    value: '沿途走位',
+                }
+                ],
+                value2: [],
+                colData: [
+                    { title: '赛马', istrue: true ,value:0},
+                    { title: '赛马id', istrue: true  ,value:1},
+                    { title: '练师', istrue: true  ,value:2},
+                    { title: '骑师', istrue: true ,value:3},
+                    { title: '赛道', istrue: true  ,value:4},
+                    { title: '赛程', istrue: true  ,value:5},
+                    { title: '历史成绩', istrue: true ,value:6},
+                    { title: '头马距离', istrue: true  ,value:7},
+                    { title: '沿途走位', istrue: true  ,value:8},
+                ],
+            }
+        },
+        mounted:function(){
+            //初始化比赛时间
+            this.getData();
+        },
+        methods: {
+            onSelectedDrug($event) {
+                //时间下拉框值发生改变的时候，场次重新绑定
+                let that = this;
+                that.time = $event;
+                that.getScene($event);
+            },
+            onSceneDrug($event){
+              //场次发生改变时，列表需要重新绑定
+                let that = this;
+                that.title1 = '第'+$event+'场';
+                //绑定列表
+                that.getList(that.time,$event);
+            },
+            getData: function () {
+                let that = this;
+                $.ajax({
+                    method: 'get',
+                    url: 'api/option/?type=options',
+                }).then(function (response) {
+                    that.options=(JSON.parse(response));
+                     //给参数
+                    that.time = that.options[0];
+                    //绑定列表
+                   that.getScene(that.time);
+                }, function (error) {
+                    console.log(error)
+                })
+            },
+            getScene: function($time){
+                let that = this;
+                $.ajax({
+                    method: 'get',
+                    url: 'api/option/?type=scene&time='+$time,
+                }).then(function (response) {
+                    that.scenelist=(JSON.parse(response));
+                    that.scene = that.scenelist[0];
+                    that.title1 = '第'+that.scene+'场';
+                    console.log(that.title1)
+                    //绑定列表
+                   that.getList(that.time,that.scene);
+                }, function (error) {
+                    console.log(error)
+                })
+            },
+            getList: function($time,$scene){
+                let that = this;
+                $.ajax({
+                    method: 'post',
+                    url: 'api/index/',
+                    data:{
+                        //两个默认参数，一个是时间，一个是场次
+                       time:$time,
+                       scene:$scene
+                    },
+                }).then(function (response) {
+                    that.list=(JSON.parse(response));
+                    console.log(that.list)
+                }, function (error) {
+                    console.log(error)
+                })
+            },
+            onSelected($event) {
+                this.colData.forEach(function(item,e){
+                    item.istrue = true
+                })
+                for(let i=0;i<$event.length;i++){
+                    this.colData.forEach(function(item,e){
+                        if ($event[i] == e) {
+                            item.istrue = false
+                        }
+                    })
+                }
+            },
+
+        },
+
+    })
+
+</script>
+
+</html>

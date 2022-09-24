@@ -1,0 +1,28 @@
+@import url("eleUI.css");
+@font-face {
+    font-family: element-icons;
+    src: url(fonts/element-icons.woff?t=1472440741) format('woff'), url(fonts/element-icons.ttf?t=1472440741) format('truetype');
+    font-weight: 400;
+    font-style: normal
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+html{
+    font-family: "Microsoft YaHei", sans-serif;
+}
+body{
+    min-width:320px;
+    position: relative;
+    background: #F8F8F8;
+}
+.left{float: left;}
+.right{float: right;}
+a{color: #2B2B2C}
+em{font-style: normal;}
+.clear{overflow: hidden; clear: both;width: 100%;}
+ul li,ul ol{padding:0;margin:0;list-style:none}
+input{outline: none;}
